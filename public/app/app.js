@@ -1,5 +1,5 @@
 import './utils/array-helpers.js'
-import {log} from './utils/promise-helpers.js'
+import {log, timeoutPromise, retry} from './utils/promise-helpers.js'
 import {invoiceService} from './invoice/service.js'
 import {takeUntil, debounceTime, partialize, pipe} from "./utils/operators.js";
 
@@ -9,8 +9,7 @@ const operations = pipe(
 )
 
 const action = operations(() => 
-    invoiceService
-    .sumItems('2143')
+    retry(5, 3000, () => timeoutPromise(200, invoiceService.sumItems('2143')))
     .then(log)
     .catch(log)
 )
